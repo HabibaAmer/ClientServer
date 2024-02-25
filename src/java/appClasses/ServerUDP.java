@@ -40,18 +40,18 @@ class ServerUDP{
         
         
         
-        while(true)
-        {
+//        while(true)
+//        {
             DatagramPacket receivedPacket = new DatagramPacket(dataToReceive,dataToReceive.length);
             
             datagramSocket.receive(receivedPacket);
 
             String sentence = new String(receivedPacket.getData(),0,receivedPacket.getLength());
-            if(sentence.equalsIgnoreCase("exit"))
-            {
-                System.out.println("Exiting....");
-                break;
-            }
+//            if(sentence.equalsIgnoreCase("exit"))
+//            {
+//                System.out.println("Exiting....");
+//                break;
+//            }
             
             try (PreparedStatement preparedStatement = connection.prepareStatement(
                         "INSERT INTO chat_messages (name, message, timestamp) VALUES (?, ?,CURRENT_TIMESTAMP) RETURNING timestamp")) {
@@ -67,13 +67,13 @@ class ServerUDP{
             
             InetAddress addressIP = receivedPacket.getAddress();
             int port = receivedPacket.getPort();
-            String upperCaseResponse = sentence.toUpperCase();
+//            String upperCaseResponse = sentence.toUpperCase();
 
-            byte[] dataToSend = upperCaseResponse.getBytes();
-            DatagramPacket sentPacket = new DatagramPacket(upperCaseResponse.getBytes(),upperCaseResponse.getBytes().length, addressIP, port);
-            datagramSocket.send(sentPacket);
+//            byte[] dataToSend = upperCaseResponse.getBytes();
+//            DatagramPacket sentPacket = new DatagramPacket(upperCaseResponse.getBytes(),upperCaseResponse.getBytes().length, addressIP, port);
+//            datagramSocket.send(sentPacket);
 
-        }
+//        }
         
         datagramSocket.close();
     }

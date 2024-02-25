@@ -47,12 +47,12 @@ public class ServerTCP {
 
             String sentence = "";
 
-            while (!sentence.equalsIgnoreCase("exit")) {
+//            while (!sentence.equalsIgnoreCase("exit")) {
                 try {
                     sentence = in.readUTF();
 
-                    String uppercaseSentence = sentence.toUpperCase();
-                    out.writeUTF(uppercaseSentence);
+//                    String uppercaseSentence = sentence.toUpperCase();
+//                    out.writeUTF(uppercaseSentence);
 
                     try (Connection connection = DriverManager.getConnection(jdbcUrl, username, password)) {
 
@@ -73,7 +73,7 @@ public class ServerTCP {
                 } catch (IOException i) {
                     System.out.println(i);
                 }
-            }
+//            }
             System.out.println("Closing connection");
 
             socket.close();
