@@ -14,13 +14,19 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.*;
 import java.io.*;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.util.Date;
+import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.http.Part;
 
 /**
  *
  * @author Habiba
  */
+@MultipartConfig
 public class CheckType extends HttpServlet {
 
     @Override
@@ -29,18 +35,40 @@ public class CheckType extends HttpServlet {
         String name = request.getParameter("name");
         String connectionType = request.getParameter("connectionType");
         String message = request.getParameter("message");
+        String fname = "";
+        String path = "";
+
+        Part file = request.getPart("myfile");
+
+
         boolean messageSent = false;
 
         PrintWriter pen = response.getWriter();
 
-        if (connectionType.equals("udp")) {
-            messageSent = runUDP(name, message);
+        if (file != null && file.getSize() > 0) {
+            fname = Paths.get(file.getSubmittedFileName()).getFileName().toString();
+            String dir = System.getProperty("user.home") + "/Downloads";
+            path = dir + "/" + fname;
 
-//            runUDP(name, message);
-        } else if (connectionType.equals("tcp")) {
-            messageSent = runTCP(name, message);
+            try {
+                InputStream content = file.getInputStream();
+                Files.copy(content, Paths.get(path));
+            } catch (FileAlreadyExistsException e) {
+                String time = String.valueOf(System.currentTimeMillis());
+                String newName = fname + "_" + time;
+                path = dir + "/" + newName;
+                InputStream content = file.getInputStream();
+                Files.copy(content, Paths.get(path));
+            }
 
-//            runTCP(name, message);
+        }
+
+        if (connectionType.equals("udp") && connectionType != null) {
+            messageSent = runUDP(name, message, path);
+
+        } else if (connectionType.equals("tcp") && connectionType != null) {
+            messageSent = runTCP(name, message, path);
+
         }
 
         pen.println("<!DOCTYPE html>");
@@ -56,6 +84,7 @@ public class CheckType extends HttpServlet {
             pen.println("<p><strong>Sender Name:</strong> " + name + "</p>");
             pen.println("<p><strong>Timestamp:</strong> " + new Timestamp(new Date().getTime()).toString() + "</p>");
             pen.println("<p><strong>Message:</strong> " + message + "</p>");
+
         } else {
             pen.println("<h1>Failed to Send Message</h1>");
             pen.println("<p>An error occurred while sending the message.</p>");
@@ -63,7 +92,7 @@ public class CheckType extends HttpServlet {
 
     }
 
-    private boolean runUDP(String name, String message) {
+    private boolean runUDP(String name, String message, String path) {
         try {
             DatagramSocket socket = new DatagramSocket();
             InetAddress address = InetAddress.getByName("127.0.0.1");
@@ -76,11 +105,11 @@ public class CheckType extends HttpServlet {
             DatagramPacket messagePacket = new DatagramPacket(messageBytes, messageBytes.length, address, 9876);
             socket.send(messagePacket);
 
-//            byte[] buffer = new byte[100];
-//            DatagramPacket responsePacket = new DatagramPacket(buffer, buffer.length);
-//            socket.receive(responsePacket);
-//            String response = new String(responsePacket.getData(), 0, responsePacket.getLength());
-//            System.out.println("Received from UDP server: " + response);
+            byte[] fpath = path.getBytes();
+            DatagramPacket fpathPacket = new DatagramPacket(fpath, fpath.length, address, 9876);
+            socket.send(fpathPacket);
+
+
             socket.close();
             return true;
         } catch (IOException e) {
@@ -89,7 +118,7 @@ public class CheckType extends HttpServlet {
         }
     }
 
-    private boolean runTCP(String name, String message) {
+    private boolean runTCP(String name, String message, String path) {
         try {
             Socket socket = new Socket("127.0.0.1", 5001);
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
@@ -98,8 +127,8 @@ public class CheckType extends HttpServlet {
             out.writeUTF(name);
 
             out.writeUTF(message);
-//            String response = in.readLine();
-//            System.out.println("Received from TCP server: " + response);
+
+            out.writeUTF(path);
 
             socket.close();
             return true;

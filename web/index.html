@@ -160,30 +160,32 @@
         </style>
     </head>
     <body>
-            <div class="testbox">
-                <form method="POST" action="CheckType">
-                    <h1>Client Server Application</h1>
+        <div class="testbox">
+            <form method="POST" action="CheckType" enctype="multipart/form-data" >
+                <h1>Client Server Application</h1>
 
-                    <h4>Name<span>*</span></h4>
-                    <div class="title-block">
-                        <input class="name" type="text" name="name" placeholder="First" />
+                <h4>Name<span>*</span></h4>
+                <div class="title-block">
+                    <input class="name" type="text" name="name" placeholder="First" />
 
-                    </div>
-                    <h4>Choose Way of Connection<span>*</span></h4>
-                    <select name="connectionType">
-                        <option value=""></option>
-                        <option value="udp">UDP</option>
-                        <option value="tcp">TCP</option>
-                    </select>
+                </div>
+                <h4>Choose Way of Connection<span>*</span></h4>
+                <select name="connectionType">
+                    <option value=""></option>
+                    <option value="udp">UDP</option>
+                    <option value="tcp">TCP</option>
+                </select>
 
 
-                    <h4>Your Message:</h4>
+                <h4>Your Message:</h4>
 
-                    <textarea rows="5" name="message"></textarea>
-                    <div class="btn-block">
-                        <button type="submit">Send Message</button>
-                    </div>
-                </form>
-            </div>
+                <textarea rows="5" name="message"></textarea>
+                <label for="myfile">Select a file:</label>
+                <input type="file" id="myfile" name="myfile">
+                <div class="btn-block">
+                    <button type="submit">Send Message</button>
+                </div>
+            </form>
+        </div>
     </body>
 </html>
