@@ -42,15 +42,15 @@ class ServerUDP {
 
             String sentence = new String(receivedPacket.getData(), 0, receivedPacket.getLength());
 
-            datagramSocket.receive(receivedPacket);
-            String path = new String(receivedPacket.getData(), 0, receivedPacket.getLength());
+//            datagramSocket.receive(receivedPacket);
+//            String path = new String(receivedPacket.getData(), 0, receivedPacket.getLength());
 
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(
-                    "INSERT INTO chat_messages (name, message, filepath, timestamp ) VALUES (?, ?,?,CURRENT_TIMESTAMP) RETURNING timestamp")) {
+                    "INSERT INTO chat_messages (name, message, timestamp ) VALUES (?, ?,CURRENT_TIMESTAMP) RETURNING timestamp")) {
                 preparedStatement.setString(1, nameToPrint);
                 preparedStatement.setString(2, sentence);
-                preparedStatement.setString(3, path);
+//                preparedStatement.setString(3, path);
 
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     if (resultSet.next()) {

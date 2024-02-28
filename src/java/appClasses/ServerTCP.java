@@ -47,31 +47,32 @@ public class ServerTCP {
 
             String sentence = "";
 
-            try {
-                sentence = in.readUTF();
-                String path = in.readUTF();
+            
+                    try {
+                        sentence = in.readUTF();
 
-                try (Connection connection = DriverManager.getConnection(jdbcUrl, username, password)) {
+//                String path = in.readUTF();
+                        try (Connection connection = DriverManager.getConnection(jdbcUrl, username, password)) {
 
-                    try (PreparedStatement preparedStatement = connection.prepareStatement(
-                            "INSERT INTO chat_messages (name, message , filepath, timestamp) VALUES (?, ?,?, CURRENT_TIMESTAMP) RETURNING timestamp")) {
-                        preparedStatement.setString(1, clientName);
-                        preparedStatement.setString(2, sentence);
-                        preparedStatement.setString(3, path);
+                            try (PreparedStatement preparedStatement = connection.prepareStatement(
+                                    "INSERT INTO chat_messages (name, message , timestamp) VALUES (?, ?, CURRENT_TIMESTAMP) RETURNING timestamp")) {
+                                preparedStatement.setString(1, clientName);
+                                preparedStatement.setString(2, sentence);
+//                        preparedStatement.setString(3, path);
 
-                        try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                            if (resultSet.next()) {
-                                Timestamp dbTimestamp = resultSet.getTimestamp("timestamp");
-                                System.out.println(dbTimestamp + " " + clientName + " : " + sentence);
+                                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                                    if (resultSet.next()) {
+                                        Timestamp dbTimestamp = resultSet.getTimestamp("timestamp");
+                                        System.out.println(dbTimestamp + " " + clientName + " : " + sentence);
+                                    }
+                                }
                             }
                         }
+
+                    } catch (IOException i) {
+                        System.out.println(i);
                     }
-                }
-
-            } catch (IOException i) {
-                System.out.println(i);
-            }
-
+               
             System.out.println("Closing connection");
 
             socket.close();

@@ -35,39 +35,39 @@ public class CheckType extends HttpServlet {
         String name = request.getParameter("name");
         String connectionType = request.getParameter("connectionType");
         String message = request.getParameter("message");
-        String fname = "";
-        String path = "";
+//        String fname = "";
+//        String path = "";
 
-        Part file = request.getPart("myfile");
+//        Part file = request.getPart("myfile");
 
 
         boolean messageSent = false;
 
         PrintWriter pen = response.getWriter();
 
-        if (file != null && file.getSize() > 0) {
-            fname = Paths.get(file.getSubmittedFileName()).getFileName().toString();
-            String dir = System.getProperty("user.home") + "/Downloads";
-            path = dir + "/" + fname;
-
-            try {
-                InputStream content = file.getInputStream();
-                Files.copy(content, Paths.get(path));
-            } catch (FileAlreadyExistsException e) {
-                String time = String.valueOf(System.currentTimeMillis());
-                String newName = fname + "_" + time;
-                path = dir + "/" + newName;
-                InputStream content = file.getInputStream();
-                Files.copy(content, Paths.get(path));
-            }
-
-        }
+//        if (file != null && file.getSize() > 0) {
+//            fname = Paths.get(file.getSubmittedFileName()).getFileName().toString();
+//            String dir = System.getProperty("user.home") + "/Downloads";
+//            path = dir + "/" + fname;
+//
+//            try {
+//                InputStream content = file.getInputStream();
+//                Files.copy(content, Paths.get(path));
+//            } catch (FileAlreadyExistsException e) {
+//                String time = String.valueOf(System.currentTimeMillis());
+//                String newName = fname + "_" + time;
+//                path = dir + "/" + newName;
+//                InputStream content = file.getInputStream();
+//                Files.copy(content, Paths.get(path));
+//            }
+//
+//        }
 
         if (connectionType.equals("udp") && connectionType != null) {
-            messageSent = runUDP(name, message, path);
+            messageSent = runUDP(name, message);
 
         } else if (connectionType.equals("tcp") && connectionType != null) {
-            messageSent = runTCP(name, message, path);
+            messageSent = runTCP(name, message);
 
         }
 
@@ -92,7 +92,7 @@ public class CheckType extends HttpServlet {
 
     }
 
-    private boolean runUDP(String name, String message, String path) {
+    private boolean runUDP(String name, String message) {
         try {
             DatagramSocket socket = new DatagramSocket();
             InetAddress address = InetAddress.getByName("127.0.0.1");
@@ -105,9 +105,9 @@ public class CheckType extends HttpServlet {
             DatagramPacket messagePacket = new DatagramPacket(messageBytes, messageBytes.length, address, 9876);
             socket.send(messagePacket);
 
-            byte[] fpath = path.getBytes();
-            DatagramPacket fpathPacket = new DatagramPacket(fpath, fpath.length, address, 9876);
-            socket.send(fpathPacket);
+//            byte[] fpath = path.getBytes();
+//            DatagramPacket fpathPacket = new DatagramPacket(fpath, fpath.length, address, 9876);
+//            socket.send(fpathPacket);
 
 
             socket.close();
@@ -118,7 +118,7 @@ public class CheckType extends HttpServlet {
         }
     }
 
-    private boolean runTCP(String name, String message, String path) {
+    private boolean runTCP(String name, String message) {
         try {
             Socket socket = new Socket("127.0.0.1", 5001);
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
@@ -128,7 +128,7 @@ public class CheckType extends HttpServlet {
 
             out.writeUTF(message);
 
-            out.writeUTF(path);
+//            out.writeUTF(path);
 
             socket.close();
             return true;
